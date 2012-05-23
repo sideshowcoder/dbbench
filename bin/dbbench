@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require "db_bench/cli"
+
+DbBench::CLI.start
