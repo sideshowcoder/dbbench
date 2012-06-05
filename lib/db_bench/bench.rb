@@ -61,10 +61,17 @@ module DbBench
         # Prepare writer
         CSV.open @config.outfile, "w+" do |wcsv|
           # Prepare reader
-          CSV.foreach @config.infile do |input|
+          CSV.foreach @config.infile, :headers => true do |input|
+            # default query is search
+            type = :search
+            type = input["qtype"].to_sym if input["qtype"]
             
+            # Run describe on the query and log rows touched
+            rows_touched = conn.query_describe type, input.to_hash
+                        
+            # Run the Query and log time
             result = Benchmark.measure do
-              conn.query input
+              conn.query type, input.to_hash
             end
             
             # Progress callback commmand finished
@@ -73,7 +80,8 @@ module DbBench
             # remove empty lable and preppend command
             result = result.to_a
             result.shift
-            result = input.concat result
+            result.push rows_touched
+            result = input.to_a.concat result
             
             # write to file
             wcsv << result
