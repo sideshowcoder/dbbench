@@ -15,7 +15,7 @@ module DbBench
   # Benchmark configuration
   class Config
     # Database
-    attr_accessor :connect_string
+    attr_accessor :db_config
     attr_reader :dbtype
     
     # Output file
@@ -24,10 +24,10 @@ module DbBench
     # Input file
     attr_accessor :infile
     
-    def initialize infile, outfile, connect_string
-      @connect_string = connect_string
-      @outfile = outfile
-      @infile = infile
+    def initialize db_config, outfile=false, infile=false
+      @db_config = db_config
+      @outfile = outfile if outfile
+      @infile = infile if infile
     end
             
     # Load the correct adapter based on the type passed 
@@ -37,58 +37,69 @@ module DbBench
         begin
           require "db_bench/adapters/#{DbBench::DATABASES[@dbtype]}"
         rescue LoadError => e
-          raise DbBench::DBAdapterLoadError, "Failed to load #{@@db_types_to_adapter_mapping[_dbtype]}"
+          puts e
+          raise DbBench::DBAdapterLoadError, "Failed to load #{DbBench::DATABASES[_dbtype]}"
         end        
       else
-        raise DbBench::DBAdapterLoadError, "Failed to load _dbtype"        
+        raise DbBench::DBAdapterLoadError, "Failed to load #{DbBench::DATABASES[_dbtype]}"        
       end
     end
     
   end
-      
-  class Runner
+  
+  # Basic Settings for Benchmark 
+  class BenchmarkBase
     attr_accessor :db, :config
     
     def initialize config
       # Get the Database
-      @db = Kernel.const_get(DbBench::DATABASES[config.dbtype].capitalize)
+      @db = eval("DbBench::#{DbBench::DATABASES[config.dbtype].capitalize}")
+      @query = eval("DbBench::#{DbBench::DATABASES[config.dbtype].capitalize}::Query").new
+      @generator = eval("DbBench::#{DbBench::DATABASES[config.dbtype].capitalize}::Generator").new
       @config = config
     end
     
+    def connect
+      @db.connect config.db_config
+    end
+    
+  end
+  
+  # Generate Data for test
+  class DataGenerator < DbBench::BenchmarkBase
+    def start
+      
+    end
+  end
+      
+  # Run tests
+  class Runner < DbBench::BenchmarkBase    
     def start
       # Connect the Database
-      db.connect @config.connect_string do |conn|
-        # Prepare writer
-        CSV.open @config.outfile, "w+" do |wcsv|
-          # Prepare reader
-          CSV.foreach @config.infile, :headers => true do |input|
-            # default query is search
-            type = :search
-            type = input["qtype"].to_sym if input["qtype"]
-            
-            # Run describe on the query and log rows touched
-            rows_touched = conn.query_describe type, input.to_hash
-                        
-            # Run the Query and log time
-            result = Benchmark.measure do
-              conn.query type, input.to_hash
-            end
-            
-            # Progress callback commmand finished
-            yield
-            
-            # remove empty lable and preppend command
-            result = result.to_a
-            result.shift
-            result.push rows_touched
-            result = input.to_a.concat result
-            
-            # write to file
-            wcsv << result
-            
+      connect
+      # Prepare writer
+      CSV.open @config.outfile, "w+" do |wcsv|
+        # Prepare reader
+        CSV.foreach @config.infile, :headers => true do |input|
+          
+          # Run the Query and log time
+          result = Benchmark.measure do
+            @query.query input.to_hash
           end
-
+          
+          # Progress callback commmand finished
+          yield
+          
+          # remove empty lable and preppend command
+          result = result.to_a
+          result.shift
+          result = input.to_a.concat result
+          
+          # write to file
+          wcsv << result
+          
         end
+      
       end
     end
     

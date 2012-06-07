@@ -4,9 +4,9 @@ require "progressbar"
 
 class DbBench::CLI < Thor
 
-  desc "benchmark [COMMANDFILE] [RESULTFILE] [DATABASECONNECTIONSTRING] [DATABASETYPE]", "Benchmark a Database with given commands"
-  def benchmark infile, outfile, connect_string, type
-    config = DbBench::Config.new infile, outfile, connect_string
+  desc "benchmark [COMMANDFILE] [RESULTFILE] [DATABACONFIGFILE] [DATABASETYPE]", "Benchmark a Database with given commands"
+  def benchmark infile, outfile, db_config, type
+    config = DbBench::Config.new db_config, outfile, infile
     begin
       config.dbtype = type
     rescue DbBench::DBAdapterLoadError => e
@@ -31,6 +31,35 @@ class DbBench::CLI < Thor
     rescue Exception => e
       error "Failed with Error #{e}"
     end
+  end
+  
+  desc "benchmark [DATABACONFIGFILE] [DATABASETYPE]", "Generate the Date for a given Database Schema"
+  def generate_test_data db_config, type, data_sets=100000
+    config = DbBench::Config.new db_config
+    begin
+      config.dbtype = type
+    rescue DbBench::DBAdapterLoadError => e
+      error "Database adapter for #{type} could not be loaded"
+    end
+
+    ok "Loaded Configuration"
+    
+    begin
+      generator = DbBench::Generator.new config
+    
+      # Get the progressbar
+      pbar = ProgressBar.new "Generate Data", data_sets
+    
+      generator.start do 
+        pbar.inc
+      end
+    
+      pbar.finish
+      ok "Data generation successfull"
+
+    rescue Exception => e
+      error "Failed with Error #{e}"
+    end    
   end
 
 private 

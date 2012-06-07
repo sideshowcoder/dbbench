@@ -1,0 +1,5 @@
+adapter: mysql
+database: test
+username: dev
+password: gyiy3skr
+host: 127.0.0.1
