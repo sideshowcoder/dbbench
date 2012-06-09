@@ -9,7 +9,7 @@ module DbBench
         :md5 => /^varchar\(40\)/,
         :id => /^int\(10\)/,
         :tinyint => /^tinyint(\((\d+)\))?\s?(unsigned)?/,
-        :enum => "enum",
+        :enum => /^enum\(('([^,]+)',?)+\)/,
         :date => "date",
         :time => "time",
         :smallint => /^smallint(\((\d+)\))?\s?(unsigned)?/,
@@ -39,6 +39,8 @@ module DbBench
                   hash[field] = send func, *m[1]
                 elsif [:int, :tinyint, :smallint].include? func
                   hash[field] = send func, *m[2..m.length]
+                elsif [:enum].include? func
+                  hash[field] = send func, type.split(",").map { |e| /'(.+)'/.match(e)[1] }
                 end
                 break
               end
@@ -79,7 +81,7 @@ module DbBench
         def datetime
         end
         
-        def enum *options
+        def enum options
           # return a random element from the arguments array 
           options[rand(options.length)]
         end              
