@@ -20,8 +20,16 @@ Or install it yourself as:
 
 To benchmark mysql
 
-  dbbench benchmark commands.csv result.csv user:password@host:port/database mysql
+  dbbench benchmark commands.csv result.csv database.yml mysql
+  dbbench benchmark [COMMANDFILE] [OUTPUTFILE] [DATABASECONFIG] [DATABASETYPE]
   
 Output is a csv with the command + the timings
+  
+To create Data 
+  
+  dbbench generate database.yml mysql 100
+  dbbench generate [DATABASECONFIG] [DATABASETYPE] [OPTIONAL NUMBEROFROWS]
+  
+Creates Entries in the Database to benchmark against
 
 To extend with new Databases and queries implement a adapter with and interface according to the mysql one

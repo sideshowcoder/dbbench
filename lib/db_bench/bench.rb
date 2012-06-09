@@ -66,9 +66,13 @@ module DbBench
   end
   
   # Generate Data for test
-  class DataGenerator < DbBench::BenchmarkBase
-    def start
-      
+  class Generator < DbBench::BenchmarkBase
+    def start data_sets
+      connect
+      data_sets.times do
+        @generator.generate
+        yield
+      end
     end
   end
       

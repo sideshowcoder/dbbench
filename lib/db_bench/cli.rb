@@ -33,8 +33,9 @@ class DbBench::CLI < Thor
     end
   end
   
-  desc "benchmark [DATABACONFIGFILE] [DATABASETYPE]", "Generate the Date for a given Database Schema"
-  def generate_test_data db_config, type, data_sets=100000
+  desc "generate [DATABACONFIGFILE] [DATABASETYPE]", "Generate the Date for a given Database Schema"
+  def generate db_config, type, data_sets=100000
+    data_sets = data_sets.to_i
     config = DbBench::Config.new db_config
     begin
       config.dbtype = type
@@ -50,9 +51,7 @@ class DbBench::CLI < Thor
       # Get the progressbar
       pbar = ProgressBar.new "Generate Data", data_sets
     
-      generator.start do 
-        pbar.inc
-      end
+      generator.start(data_sets) { pbar.inc }
     
       pbar.finish
       ok "Data generation successfull"
