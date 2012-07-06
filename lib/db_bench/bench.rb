@@ -87,8 +87,9 @@ module DbBench
         CSV.foreach @config.infile, :headers => true do |input|
           
           # Run the Query and log time
+          count = 0
           result = Benchmark.measure do
-            @query.query input.to_hash
+            count = @query.query input.to_hash
           end
           
           # Progress callback commmand finished
@@ -98,6 +99,7 @@ module DbBench
           result = result.to_a
           result.shift
           result = input.to_a.concat result
+          result << count
           
           # write to file
           wcsv << result

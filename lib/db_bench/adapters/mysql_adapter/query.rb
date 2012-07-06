@@ -12,7 +12,8 @@ module DbBench
 
       # Passes the query to the correct query function based on the type
       def query args
-        GeneratedLift.where build_query_string GEOFUNC, args
+       res = GeneratedLift.where(build_query_string GEOFUNC, args)
+       res.length
       end
       
       private
@@ -83,7 +84,7 @@ module DbBench
           
           if search_date_range != 0 && base_date
             base_date = Date.parse base_date
-            query_conditions << "(date BETWEEN ''#{base_date.to_s}' AND '#{(base_date + search_date_range.to_i).to_s}')" 
+            query_conditions << "(date BETWEEN '#{base_date.to_s}' AND '#{(base_date + search_date_range.to_i).to_s}')" 
           end
           
           # Remaining query parameters
