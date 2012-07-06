@@ -1,5 +1,6 @@
 require_relative "generated_lift"
 require "ffaker"
+require "geohash"
 
 module DbBench
   module Mysql
@@ -7,6 +8,7 @@ module DbBench
     class Generator
       
       SQL_TYPE_TO_DATA_MAPPING = {
+        :dbid => /^int\(10\)/,
         :md5 => /^varchar\(40\)/,
         :tinyint => /^tinyint(\((\d+)\))?\s?(unsigned)?/,
         :enum => /^enum\(('([^,]+)',?)+\)/,
@@ -16,7 +18,8 @@ module DbBench
         :int => /^int(\((\d+)\))?\s?(unsigned)?/ ,
         :decimal => /^decimal\((\d+),(\d+)\)/,
         :datetime => /^datetime/,
-        :double => /^double/,
+        :geocoord => /^double/,
+        :geohash => /^char\(10\)/,
         :varchar => /^varchar\((\d+)\)/
       }
       
@@ -26,7 +29,11 @@ module DbBench
           hash[key] = value.sql_type
           hash
         end
-        GeneratedLift.create! build_data column_data
+        data = build_data column_data
+        #  generate the geohash
+        data["departure_geohash"] = GeoHash.encode(data["departure_lat"], data["departure_long"])
+        data["destination_geohash"] = GeoHash.encode(data["destination_lat"], data["destination_long"])
+        GeneratedLift.create! data
       end
       
       private 
@@ -42,16 +49,21 @@ module DbBench
                   hash[field] = send func, *m[2..m.length]
                 elsif [:enum].include? func
                   hash[field] = send func, type.split(",").map { |e| /'(.+)'/.match(e)[1] }
-                elsif [:double, :date, :time, :datetime].include? func
+                elsif [:geocoord, :date, :time, :datetime, :dbid].include? func
                   hash[field] = send func
                 else
-                  p m
+                  # The value is supposed to be nil! because it catches all the errors
+                  hash[field] = nil
                 end
                 break
               end
             end
             hash
           end
+        end
+        
+        def dbid
+          int 10, true
         end
         
         def md5
@@ -88,8 +100,10 @@ module DbBench
           rand.to_s[0..scale].to_f() + int(digits)
         end
         
-        def double
-          rand(100000000000000010901051724930857196452234783424494612613028642816) + rand
+        def geocoord
+          # Generating a Geo Coord long / lat ignoring long might be bigger than 90
+          val = rand(2) == 0 ? rand(90) : -(rand 90)
+          val + rand
         end
         
         def date
