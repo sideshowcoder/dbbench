@@ -91,12 +91,14 @@ module DbBench
           result = Benchmark.measure do
             count = @query.query input.to_hash
           end
+
+          result = result.to_a          
+          result << @query.explain(input.to_hash)
           
           # Progress callback commmand finished
           yield
           
           # remove empty lable and preppend command
-          result = result.to_a
           result.shift
           result = input.to_a.concat result
           result << count

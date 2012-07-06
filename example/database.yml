@@ -1,4 +1,4 @@
-adapter: mysql
+adapter: mysql2
 database: test
 username: dev
 password: gyiy3skr

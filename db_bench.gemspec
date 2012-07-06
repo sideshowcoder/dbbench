@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "thor"
   gem.add_runtime_dependency "progressbar"  
   gem.add_runtime_dependency "ffaker"
-  gem.add_runtime_dependency "mysql"
+  gem.add_runtime_dependency "mysql2"
   gem.add_runtime_dependency "activerecord"  
   gem.add_runtime_dependency "active_column"
 end

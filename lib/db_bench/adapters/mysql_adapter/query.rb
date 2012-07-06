@@ -16,6 +16,10 @@ module DbBench
        res.length
       end
       
+      def explain args
+        GeneratedLift.where(build_query_string GEOFUNC, args).explain
+      end
+      
       private
         # prepare the argumenst by transforming values as needed
         def build_query_string geofunc, args
