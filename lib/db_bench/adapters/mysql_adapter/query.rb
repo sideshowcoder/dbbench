@@ -1,42 +1,48 @@
 require_relative "generated_lift"
+require "geohash"
 
 module DbBench
   module Mysql
   
     class Query
+      
+      # Use geo method
+      GEOFUNC = :calculate_radius_with_geohash
+      # GEOFUNC = :calculate_radius
 
       # Passes the query to the correct query function based on the type
       def query args
-        GeneratedLift.where build_query_string args
+        GeneratedLift.where build_query_string GEOFUNC, args
       end
       
       private
         # prepare the argumenst by transforming values as needed
-        def build_query_string args
+        def build_query_string geofunc, args
           # remove NULL Values
           query = args.delete_if { |key, val| val.to_s.match /NULL/ }
           query_conditions = []
-          
+          geofunc = self.method(geofunc)
           # Radius Search
           if destination_id = query["destination_id"].to_i
             # calculate the radius to search for destination_radius
             if (destination_radius = query["destination_radius"].to_i) && destination_radius != 0
               # get lat and long
-              lift = GeneratedLift.find_by_destination_id destination_id
-              destination_lat = lift.destination_lat
-              destination_long = lift.destination_long
+              if (lift = GeneratedLift.find_by_destination_id destination_id)
+                destination_lat = lift.destination_lat
+                destination_long = lift.destination_long
               
-              query.delete "destination_long"
-              query.delete "destination_lat"
-              query.delete "destination_radius"
+                query.delete "destination_long"
+                query.delete "destination_lat"
+                query.delete "destination_radius"
               
-              if destination_long.nil? || destination_lat.nil?
-                # No Long Lat for those so cant do radius search
-              else
-                # Clear from query
-                query.delete "destination_id"                
-                # Add Condition
-                query_conditions << calculate_radius(destination_lat, destination_long, destination_radius, "destination")
+                if destination_long.nil? || destination_lat.nil?
+                  # No Long Lat for those so cant do radius search
+                else
+                  # Clear from query
+                  query.delete "destination_id"                
+                  # Add Condition
+                  query_conditions << geofunc.call(destination_lat, destination_long, destination_radius, "destination")
+                end
               end
             end
           end          
@@ -45,22 +51,23 @@ module DbBench
             # calculate the radius to search for destination_radius
             if (departure_radius = query["departure_radius"].to_i) && departure_radius != 0
               # get lat and long
-              lift = GeneratedLift.find_by_departure_id departure_id
-              departure_lat = lift.departure_lat
-              departure_long = lift.departure_long
-              
-              query.delete "departure_long"
-              query.delete "departure_lat"
-              query.delete "departure_radius"
-              
-              if departure_lat.nil? || departure_long.nil?
-                 # No Long Lat for those so cant do radius search
-               else      
-                 # Clear from query
-                 query.delete "departure_id"
-                 # Add Condition
-                 query_conditions << calculate_radius(departure_lat, departure_long, departure_radius, "departure")           
-               end
+              if (lift = GeneratedLift.find_by_departure_id departure_id)
+                departure_lat = lift.departure_lat
+                departure_long = lift.departure_long
+                
+                query.delete "departure_long"
+                query.delete "departure_lat"
+                query.delete "departure_radius"
+                
+                if departure_lat.nil? || departure_long.nil?
+                   # No Long Lat for those so cant do radius search
+                else      
+                   # Clear from query
+                   query.delete "departure_id"
+                   # Add Condition
+                   query_conditions << geofunc.call(departure_lat, departure_long, departure_radius, "departure")
+                end
+              end
             end
           end
           
@@ -99,6 +106,18 @@ module DbBench
         def deg2rad th
           th / 180.0 * Math::PI
         end
+        
+        def calculate_radius_with_geohash lat, long, radius, label
+          
+          gh = GeoHash.encode lat, long, 8
+          
+          lat1km = 1/111.0
+          long1km = (1 / (Math::cos( deg2rad lat ) * 111)).abs
+
+          "(#{label}_geohash LIKE '#{gh}%') AND
+          (POW((abs(#{label}_lat - #{lat})/#{lat1km}),2))+(POW((abs(#{label}_long-#{long})/#{long1km}),2)) <= #{radius**2}"
+        end
+        
   
     end
   
