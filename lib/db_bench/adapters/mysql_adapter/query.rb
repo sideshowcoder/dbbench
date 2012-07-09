@@ -35,11 +35,7 @@ module DbBench
               if (lift = GeneratedLift.find_by_destination_id destination_id)
                 destination_lat = lift.destination_lat
                 destination_long = lift.destination_long
-              
-                query.delete "destination_long"
-                query.delete "destination_lat"
-                query.delete "destination_radius"
-              
+                            
                 if destination_long.nil? || destination_lat.nil?
                   # No Long Lat for those so cant do radius search
                 else
@@ -50,8 +46,12 @@ module DbBench
                 end
               end
             end
-          end          
-                    
+          end 
+          
+          query.delete "destination_long"
+          query.delete "destination_lat"
+          query.delete "destination_radius"
+                             
           if departure_id = query["departure_id"].to_i
             # calculate the radius to search for destination_radius
             if (departure_radius = query["departure_radius"].to_i) && departure_radius != 0
@@ -59,11 +59,7 @@ module DbBench
               if (lift = GeneratedLift.find_by_departure_id departure_id)
                 departure_lat = lift.departure_lat
                 departure_long = lift.departure_long
-                
-                query.delete "departure_long"
-                query.delete "departure_lat"
-                query.delete "departure_radius"
-                
+                                
                 if departure_lat.nil? || departure_long.nil?
                    # No Long Lat for those so cant do radius search
                 else      
@@ -75,6 +71,10 @@ module DbBench
               end
             end
           end
+          
+          query.delete "departure_long"
+          query.delete "departure_lat"
+          query.delete "departure_radius"
           
           # Date Search
           if base_date = query["search_date"]
