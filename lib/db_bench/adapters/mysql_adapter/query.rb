@@ -20,6 +20,10 @@ module DbBench
         GeneratedLift.where(build_query_string GEOFUNC, args).explain
       end
       
+      def rows_scanned args
+        GeneratedLift.where(build_query_string GEOFUNC, args).explain.split("\n")[4].split("|")[-2].to_i
+      end
+      
       private
         # prepare the argumenst by transforming values as needed
         def build_query_string geofunc, args

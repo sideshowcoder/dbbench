@@ -94,6 +94,7 @@ module DbBench
 
           result = result.to_a          
           result << @query.explain(input.to_hash)
+          result << @query.rows_scanned(input.to_hash)
           
           # Progress callback commmand finished
           yield
