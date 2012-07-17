@@ -84,6 +84,8 @@ module DbBench
       # Prepare writer
       CSV.open @config.outfile, "w+" do |wcsv|
         # Prepare reader
+        wcsv << ["utime", "stime", "cutime", "cstime", "real", "results", "scanned", "explain", "query params"]
+         
         CSV.foreach @config.infile, :headers => true do |input|
           
           # Run the Query and log time
@@ -93,16 +95,19 @@ module DbBench
           end
 
           result = result.to_a          
-          result << @query.explain(input.to_hash)
-          result << @query.rows_scanned(input.to_hash)
           
           # Progress callback commmand finished
           yield
           
           # remove empty lable and preppend command
-          result.shift
-          result = input.to_a.concat result
+          result.shift          
           result << count
+          result << @query.rows_scanned(input.to_hash)
+          result << @query.explain(input.to_hash)
+
+          input.to_hash.each do |key,value|
+            result << value
+          end
           
           # write to file
           wcsv << result
