@@ -1,6 +1,8 @@
 require_relative "generated_lift"
+require_relative "../../random_modules/city_map"
 require "ffaker"
 require "geohash"
+
 
 module DbBench
   module Mysql
@@ -31,6 +33,7 @@ module DbBench
         end
         data = build_data column_data
         #  generate the geohash
+        p data
         data["departure_geohash"] = GeoHash.encode(data["departure_lat"], data["departure_long"])
         data["destination_geohash"] = GeoHash.encode(data["destination_lat"], data["destination_long"])
         GeneratedLift.create! data
@@ -39,25 +42,31 @@ module DbBench
       private 
         def build_data column_data
           column_data.inject({}) do |hash, (field,type)|
-            Generator::SQL_TYPE_TO_DATA_MAPPING.map do |func,matcher|
-              if (m = matcher.match type)
-                if [:varchar, :md5].include? func
-                  hash[field] = send func, *m[1]
-                elsif [:decimal].include? func
-                  hash[field] = send func, *m[1..2]
-                elsif [:int, :tinyint, :smallint].include? func
-                  hash[field] = send func, *m[2..m.length]
-                elsif [:enum].include? func
-                  hash[field] = send func, type.split(",").map { |e| /'(.+)'/.match(e)[1] }
-                elsif [:geocoord, :date, :time, :datetime, :dbid].include? func
-                  hash[field] = send func
-                else
-                  # The value is supposed to be nil! because it catches all the errors
-                  hash[field] = nil
+            # Don't generate data for long, lat and matching ids
+            unless ["departure_lat", "departure_long", "departure_id", "destination_lat", "destination_long", "destination_id"].include? field
+              Generator::SQL_TYPE_TO_DATA_MAPPING.map do |func,matcher|
+                if (m = matcher.match type)
+                  if [:varchar, :md5].include? func
+                    hash[field] = send func, *m[1]
+                  elsif [:decimal].include? func
+                    hash[field] = send func, *m[1..2]
+                  elsif [:int, :tinyint, :smallint].include? func
+                    hash[field] = send func, *m[2..m.length]
+                  elsif [:enum].include? func
+                    hash[field] = send func, type.split(",").map { |e| /'(.+)'/.match(e)[1] }
+                  elsif [:date, :time, :datetime, :dbid].include? func
+                    hash[field] = send func
+                  else
+                    # The value is supposed to be nil! because it catches all the errors
+                    hash[field] = nil
+                  end
+                  break
                 end
-                break
               end
             end
+            # Inject random geo taken from the city map
+            hash.merge! CityMap.instance.random_city("departure")
+            hash.merge! CityMap.instance.random_city("destination")
             hash
           end
         end
