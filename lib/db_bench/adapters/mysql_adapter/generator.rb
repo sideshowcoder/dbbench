@@ -20,8 +20,6 @@ module DbBench
         :int => /^int(\((\d+)\))?\s?(unsigned)?/ ,
         :decimal => /^decimal\((\d+),(\d+)\)/,
         :datetime => /^datetime/,
-        :geocoord => /^double/,
-        :geohash => /^char\(10\)/,
         :varchar => /^varchar\((\d+)\)/
       }
       
@@ -33,7 +31,6 @@ module DbBench
         end
         data = build_data column_data
         #  generate the geohash
-        p data
         data["departure_geohash"] = GeoHash.encode(data["departure_lat"], data["departure_long"])
         data["destination_geohash"] = GeoHash.encode(data["destination_lat"], data["destination_long"])
         GeneratedLift.create! data
@@ -108,13 +105,7 @@ module DbBench
           digits = digits.to_i() - scale
           rand.to_s[0..scale].to_f() + int(digits)
         end
-        
-        def geocoord
-          # Generating a Geo Coord long / lat ignoring long might be bigger than 90
-          val = rand(2) == 0 ? rand(90) : -(rand 90)
-          val + rand
-        end
-        
+                
         def date
           Date.new
         end
