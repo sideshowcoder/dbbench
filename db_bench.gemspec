@@ -21,4 +21,5 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "mysql2"
   gem.add_runtime_dependency "activerecord"  
   gem.add_runtime_dependency "active_column"
+  gem.add_runtime_dependency "geohash", ">= 1.1.2"
 end

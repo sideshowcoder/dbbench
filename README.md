@@ -4,6 +4,11 @@ Fill Database with random Data and run Prerecorded queries against it to optimiz
 
 ## Installation
 
+!!! IMPORTANT !!!
+Get the correct version of the geohash gem, which is 1.1.2. this version is currently not 
+available via rubygems but on github, so you need to install it first by downloading it from
+https://github.com/sideshowcoder/geohash and install via gem build and gem install
+
 Checkout the code
   
   $ git clone https://github.com/sideshowcoder/dbbench.git
