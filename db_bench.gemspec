@@ -4,9 +4,9 @@ require File.expand_path('../lib/db_bench/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Philipp Fehre"]
   gem.email         = ["phil@cospired.com"]
-  gem.description   = %q{Benchmark Databases}
-  gem.summary       = %q{Databases used to search testing and Benchmarking}
-  gem.homepage      = ""
+  gem.description   = %q{Database benchmark tools to create input data and rerun defined queries}
+  gem.summary       = %q{Tools to benchmark a database}
+  gem.homepage      = "https://github.com/sideshowcoder/dbbench"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
@@ -22,4 +22,9 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "activerecord"  
   gem.add_runtime_dependency "active_column"
   gem.add_runtime_dependency "geohash", ">= 1.1.2"
+  # testing and development
+  gem.add_development_dependency "activesupport"
+  gem.add_development_dependency "rspec"
+  gem.add_development_dependency "rspec_candy"
+
 end
