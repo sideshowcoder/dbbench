@@ -7,8 +7,16 @@ module DBbench
 
     class Base
 
-      class << self
-        attr_accessor :matcher
+      def self.router
+        if defined?(@@router) && !@@router.nil?
+          @@router
+        else
+          @router = self.infered_router
+        end
+      end
+
+      def self.router=(router)
+        @@router = router
       end
 
       def self.layout
@@ -33,12 +41,17 @@ module DBbench
       end
 
       protected
-      def self.infered_model
+      def self.infered_base_name
         self.to_s.split(/(?=[A-Z])/)[0...-1].join.constantize
       end
 
+      def self.infered_router
+        router_klass = "#{self.infered_base_name}Router".constantize
+        router_klass.new
+      end
+
       def self.infered_layout
-        self.infered_model.columns_hash.inject({}) do |hash, (key, value)|
+        self.infered_base_name.columns_hash.inject({}) do |hash, (key, value)|
           hash[key] = value.sql_value
           hash
         end
@@ -46,12 +59,12 @@ module DBbench
 
       def self.basic_types
         self.layout.inject({}) do |hash, (fieldname, fieldtype)|
-          generator = self.matcher.generator(fieldtype)
+          route = self.router.route(fieldtype)
           begin
-            hash[fieldname] = self.send(generator.fetch(:function), 
-                                        generator.fetch(:arguments))
+            hash[fieldname] = self.send(route.fetch(:function), 
+                                        route.fetch(:arguments))
           rescue NoMethodError
-            raise UnkownGeneratorError, "#{generator.fetch(:function)} was \
+            raise UnkownGeneratorError, "#{route.fetch(:function)} was \
               used for data generation but is not defined"
           rescue KeyError
             raise UnkownGeneratorError, "no generator found for #{fieldtype}"

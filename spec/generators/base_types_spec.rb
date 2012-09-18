@@ -8,7 +8,7 @@ end
 describe DBbench::Generator::BaseTypesLib do
 
   subject do
-    BaseTypesTest
+    BaseTypesTest.new
   end
   
   describe "int generator" do

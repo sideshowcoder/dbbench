@@ -1,9 +1,9 @@
 require "spec_helper"
 require "db_bench/generators/base"
+require "db_bench/routers/base"
   
-class KickGenerator < DBbench::Generator::Base
-end
-
+class KickGenerator < DBbench::Generator::Base; end
+class KickRouter < DBbench::Router::Base; end
 class Kick; end
 
 describe DBbench::Generator::Base do
@@ -11,19 +11,19 @@ describe DBbench::Generator::Base do
   it "should should generate a hash with the given layout filled with data" do
     KickGenerator.stub(:groins).and_return(:kick)
     KickGenerator.layout = { kickme: "groins" }
-    KickGenerator.matcher = double("Matcher", :generator => { function: :groins, arguments: "" })
+    KickGenerator.router = double("Router", :route => { function: :groins, arguments: "" })
     KickGenerator.generate[:kickme].should == :kick
   end
 
   it "should raise UnkownGeneratorError if the generator function is not defined" do
     KickGenerator.layout = { kickme: "shins" }
-    KickGenerator.matcher = double("Matcher", :generator => { function: :shins, arguments: ""})
+    KickGenerator.router = double("Router", :route => { function: :shins, arguments: ""})
     lambda { KickGenerator.generate }.should raise_error DBbench::Generator::UnkownGeneratorError
   end
 
-  it "should raise an UnkownGeneratorError if the matcher does not find a function" do
+  it "should raise an UnkownGeneratorError if the router does not find a function" do
     KickGenerator.layout = { kickme: "shins" }
-    KickGenerator.matcher = double("Matcher", :generator => { })
+    KickGenerator.router = double("Router", :route => { })
     lambda { KickGenerator.generate }.should raise_error DBbench::Generator::UnkownGeneratorError
   end
 
@@ -43,7 +43,7 @@ describe DBbench::Generator::Base do
     it "should not overwrite the data from the enumerated properties" do
       KickGenerator.stub(:id).and_return(:thisshouldneverhappen)
       KickGenerator.layout = { id: "id" }
-      KickGenerator.matcher = double("Matcher", :generator => { function: :id, arguments: "" })
+      KickGenerator.router = double("Router", :route => { function: :id, arguments: "" })
       KickGenerator.generate[:id].should == "1"
     end
 
@@ -60,5 +60,21 @@ describe DBbench::Generator::Base do
     end
 
   end
+
+  describe "Router inference" do
+    before(:each) do
+      KickGenerator.router = nil
+    end
+
+    it "should route the call based on the infered router" do
+      router = stub(:route => {function: :nothing, arguments: ""})
+      KickRouter.stub(:new).and_return(router)
+      KickGenerator.stub(:nothing).and_return(:great)
+      KickGenerator.layout = { nothing: "nothing" }
+      KickGenerator.generate[:nothing].should == :great
+    end
+
+  end
+
 
 end
