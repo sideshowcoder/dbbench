@@ -1,4 +1,5 @@
 require "db_bench/generators/enumerated"
+require "active_support/inflector"
 
 module DBbench
   module Generator
@@ -7,14 +8,24 @@ module DBbench
     class Base
 
       class << self
-        attr_accessor :layout
         attr_accessor :matcher
-        attr_accessor :enumerators
+      end
+
+      def self.layout
+        if defined?(@@layout) && !@@layout.nil?
+          @@layout
+        else
+          @@layout = self.infered_layout
+        end
+      end
+
+      def self.layout=(layout)
+        @@layout = layout
       end
 
       def self.enumerate(name, options={}) 
-        self.enumerators ||= Array.new
-        self.enumerators << Enumerated.new(name, options)
+        @@enumerators ||= Array.new
+        @@enumerators << Enumerated.new(name, options)
       end
 
       def self.generate
@@ -22,6 +33,17 @@ module DBbench
       end
 
       protected
+      def self.infered_model
+        self.to_s.split(/(?=[A-Z])/)[0...-1].join.constantize
+      end
+
+      def self.infered_layout
+        self.infered_model.columns_hash.inject({}) do |hash, (key, value)|
+          hash[key] = value.sql_value
+          hash
+        end
+      end
+
       def self.basic_types
         self.layout.inject({}) do |hash, (fieldname, fieldtype)|
           generator = self.matcher.generator(fieldtype)
@@ -39,8 +61,8 @@ module DBbench
       end
 
       def self.enumerated_types 
-        unless self.enumerators.nil?
-          self.enumerators.inject({}) do |hash, enumerator|
+        if defined?(@@enumerators) && !@@enumerators.nil?
+          @@enumerators.inject({}) do |hash, enumerator|
             hash.merge!(enumerator.data)
           end
         else

@@ -1,13 +1,10 @@
 require "spec_helper"
-require "pry"
 require "db_bench/generators/base"
-
-#class SampleGenerator < DBbench::Generator::Base
-  #enumerate :sample 
-#end
   
 class KickGenerator < DBbench::Generator::Base
 end
+
+class Kick; end
 
 describe DBbench::Generator::Base do
   
@@ -38,10 +35,6 @@ describe DBbench::Generator::Base do
       end
     end
 
-    it "should define a Enumerated Generator for a property" do
-      KickGenerator.enumerators.length.should == 1
-    end
-
     it "should include the data from the enumerated properties" do
       KickGenerator.layout = { }
       KickGenerator.generate[:id].should_not be_nil
@@ -52,6 +45,18 @@ describe DBbench::Generator::Base do
       KickGenerator.layout = { id: "id" }
       KickGenerator.matcher = double("Matcher", :generator => { function: :id, arguments: "" })
       KickGenerator.generate[:id].should == "1"
+    end
+
+  end
+
+  describe "Layout inference" do
+    before(:each) do
+      KickGenerator.layout = nil
+    end
+
+    it "should get the layout from the infered AR conform model if not set" do
+      Kick.stub(:columns_hash).and_return({ foo: stub(:sql_value => "bar")})
+      KickGenerator.layout.should == { foo: "bar" }
     end
 
   end
