@@ -8,32 +8,32 @@ module DBbench
     class Base
 
       def self.router
-        if defined?(@@router) && !@@router.nil?
-          @@router
+        if defined?(@router) && !@router.nil?
+          @router
         else
           @router = self.infered_router
         end
       end
 
       def self.router=(router)
-        @@router = router
+        @router = router
       end
 
       def self.layout
-        if defined?(@@layout) && !@@layout.nil?
-          @@layout
+        if defined?(@layout) && !@layout.nil?
+          @layout
         else
-          @@layout = self.infered_layout
+          @layout = self.infered_layout
         end
       end
 
       def self.layout=(layout)
-        @@layout = layout
+        @layout = layout
       end
 
       def self.enumerate(name, options={}) 
-        @@enumerators ||= Array.new
-        @@enumerators << Enumerated.new(name, options)
+        @enumerators ||= Array.new
+        @enumerators << Enumerated.new(name, options)
       end
 
       def self.generate
@@ -74,8 +74,8 @@ module DBbench
       end
 
       def self.enumerated_types 
-        if defined?(@@enumerators) && !@@enumerators.nil?
-          @@enumerators.inject({}) do |hash, enumerator|
+        if defined?(@enumerators) && !@enumerators.nil?
+          @enumerators.inject({}) do |hash, enumerator|
             hash.merge!(enumerator.data)
           end
         else
