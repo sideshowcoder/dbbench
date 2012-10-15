@@ -3,7 +3,7 @@ require "active_support/inflector"
 
 module DBbench
   module Generator
-    class UnkownGeneratorError < Exception; end
+    class UnkownGeneratorError < StandardError; end
 
     class Base
 

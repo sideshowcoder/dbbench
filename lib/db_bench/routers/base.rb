@@ -11,9 +11,11 @@
 module DBbench
   module Router
 
+    class UnknownRoute < StandardError; end
+
     class Base
       class << self
-        attr :routes
+        attr_accessor :routes
       end
 
       def self.routes
@@ -21,7 +23,25 @@ module DBbench
       end
 
       def self.match(route)
+        route = { matcher: Regexp.new(route.keys[0]), function: route.values[0] }
         routes << route
+      end
+      
+      def route(field)
+        self.class.routes.each do |r|
+          if r[:matcher].match(field)
+            return { 
+              function: r[:function], 
+              arguments: params_for_matcher(field, r[:matcher])
+            }
+          end
+        end
+        raise UnknownRoute
+      end
+
+      def params_for_matcher(field, definition)
+        matched = definition.match(field)
+        matched.to_a[1..-1]
       end
     end
 
