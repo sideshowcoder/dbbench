@@ -1,9 +1,8 @@
 require "spec_helper"
-require "db_bench/generators/enumerated"
 
 describe DBbench::Generator::Enumerated do
   subject do
-    DBbench::Generator::Enumerated.new(:sample, { directory: "#{DBbench::SPEC_ROOT}/fixtures" })
+    DBbench::Generator::Enumerated.new(:sample, { directory: "#{SPEC_ROOT}/fixtures" })
   end
 
   it "should throw an error if the data file is not present" do

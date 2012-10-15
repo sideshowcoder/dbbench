@@ -1,5 +1,4 @@
 require "spec_helper"
-require "db_bench/routers/base"
 
 class TestRouter < DBbench::Router::Base
   match "^int\\((.+)\\)$" => :int

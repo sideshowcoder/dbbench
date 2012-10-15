@@ -1,7 +1,6 @@
-# Setup bundler and the gems
-require "bundler"
-Bundler.setup
+require "routers/base"
+require "generators/base"
 
-require "db_bench/version"
-require "db_bench/bench"
-
+module DBbench
+  VERSION = "0.1.0"
+end

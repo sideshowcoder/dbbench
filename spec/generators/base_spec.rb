@@ -1,6 +1,4 @@
 require "spec_helper"
-require "db_bench/generators/base"
-require "db_bench/routers/base"
   
 class KickGenerator < DBbench::Generator::Base; end
 class KickRouter < DBbench::Router::Base; end
@@ -31,7 +29,7 @@ describe DBbench::Generator::Base do
 
     before(:each) do
       KickGenerator.tap do |klass|
-        klass.enumerate :sample, directory: "#{DBbench::SPEC_ROOT}/fixtures"
+        klass.enumerate :sample, directory: "#{SPEC_ROOT}/fixtures"
       end
     end
 

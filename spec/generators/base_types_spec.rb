@@ -1,5 +1,4 @@
 require "spec_helper"
-require "db_bench/generators/base_types"
 
 class BaseTypesTest
   include DBbench::Generator::BaseTypesLib

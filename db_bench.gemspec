@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/db_bench/version', __FILE__)
+$:.push File.expand_path("../lib", __FILE__)
+
+require "db_bench"
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Philipp Fehre"]
@@ -13,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "db_bench"
   gem.require_paths = ["lib"]
-  gem.version       = DbBench::VERSION
+  gem.version       = DBbench::VERSION
   
   gem.add_runtime_dependency "thor"
   gem.add_runtime_dependency "progressbar"  
@@ -26,5 +28,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "activesupport"
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "rspec_candy"
+  gem.add_development_dependency "cucumber"
 
 end

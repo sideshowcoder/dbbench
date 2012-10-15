@@ -1,4 +1,5 @@
-require "db_bench/generators/enumerated"
+require "generators/enumerated"
+require "generators/base_types"
 require "active_support/inflector"
 
 module DBbench
