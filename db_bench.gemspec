@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 
-require "db_bench"
+require "db_bench/version"
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Philipp Fehre"]
@@ -17,15 +17,15 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = DBbench::VERSION
   
-  gem.add_runtime_dependency "thor"
-  gem.add_runtime_dependency "progressbar"  
-  gem.add_runtime_dependency "ffaker"
-  gem.add_runtime_dependency "mysql2"
-  gem.add_runtime_dependency "activerecord"  
-  gem.add_runtime_dependency "active_column"
-  gem.add_runtime_dependency "geohash", ">= 1.1.2"
+  #gem.add_dependency "thor"
+  #gem.add_dependency "progressbar"  
+  #gem.add_dependency "ffaker"
+  gem.add_dependency "mysql2"
+  gem.add_dependency "activerecord"  
+  #gem.add_dependency "activesupport"
+  #gem.add_dependency "active_column"
+  #gem.add_dependency "geohash", ">= 1.1.2"
   # testing and development
-  gem.add_development_dependency "activesupport"
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "rspec_candy"
   gem.add_development_dependency "cucumber"
