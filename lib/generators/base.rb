@@ -1,12 +1,16 @@
 require "generators/enumerated"
 require "generators/base_types"
-require "active_support/inflector"
 
+require "pry"
 module DBbench
   module Generator
     class UnkownGeneratorError < StandardError; end
 
     class Base
+
+      def self.model
+        self.name.match(/^(.+)Generator$/)[1].constantize
+      end
 
       def self.router
         if defined?(@router) && !@router.nil?
@@ -37,23 +41,21 @@ module DBbench
         @enumerators << Enumerated.new(name, options)
       end
 
-      def self.generate
-        basic_types.merge(enumerated_types)
+      def self.generate(data_only = false)
+        data = basic_types.merge(enumerated_types)
+        self.model.create!(data) unless data_only
+        data
       end
 
       protected
-      def self.infered_base_name
-        self.to_s.split(/(?=[A-Z])/)[0...-1].join.constantize
-      end
-
       def self.infered_router
-        router_klass = "#{self.infered_base_name}Router".constantize
+        router_klass = "#{self.model}Router".constantize
         router_klass.new
       end
 
       def self.infered_layout
-        self.infered_base_name.columns_hash.inject({}) do |hash, (key, value)|
-          hash[key] = value.sql_value
+        self.model.columns_hash.inject({}) do |hash, (key, value)|
+          hash[key] = value.sql_type
           hash
         end
       end
@@ -63,7 +65,7 @@ module DBbench
           route = self.router.route(fieldtype)
           begin
             hash[fieldname] = self.send(route.fetch(:function), 
-                                        route.fetch(:arguments))
+                                        *route.fetch(:arguments))
           rescue NoMethodError
             raise UnkownGeneratorError, "#{route.fetch(:function)} was \
               used for data generation but is not defined"

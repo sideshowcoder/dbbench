@@ -7,7 +7,7 @@ end
 describe DBbench::Generator::BaseTypesLib do
 
   subject do
-    BaseTypesTest.new
+    BaseTypesTest
   end
   
   describe "int generator" do
@@ -17,6 +17,22 @@ describe DBbench::Generator::BaseTypesLib do
 
     it "should create usigned integers" do 
       subject.int(2, true).should be_between(0, 99)
+    end
+
+    it "should work with strings passed" do
+      subject.int("2").should be_kind_of Fixnum
+    end
+  end
+
+  describe "varchar generator" do
+    let(:string) { subject.varchar(10) }
+    it "should generate a string" do
+      string.should be_kind_of String
+      string.length.should_not > 10
+    end
+
+    it "should sanatize the input" do
+      lambda { subject.varchar("10") }.should_not raise_error
     end
   end
 

@@ -3,10 +3,11 @@ Given /^DBbench is configured$/ do
 end
 
 When /^DBbech is called to generate a record$/ do
+  @number_of_records = Something.count
   DBbench.generate(1)
 end
 
 Then /^A record should be added to the database$/ do
-    pending # express the regexp above with the code you wish you had
+  Something.count.should == @number_of_records+1
 end
 

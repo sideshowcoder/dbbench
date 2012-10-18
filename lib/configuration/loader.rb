@@ -1,16 +1,7 @@
 module DBbench
-  
-  class << self
-    attr_reader :config
-  end
-
-  def self.load_configuration(config_path)
-    @config = Configuration.new(config_path)
-  end
-
   class Configuration
 
-    attr_accessor :models, :generators, :routers, :dbconfig, :config_root
+    attr_accessor :model_names, :dbconfig, :config_root
 
     def initialize(config_path)
       @config_root = config_path
@@ -22,11 +13,21 @@ module DBbench
     end
 
     def routers
-      @routers ||= @models.map { |m| "#{m}Router" }
+      @model_names.map do |m| 
+        "#{m}Router".constantize
+      end
     end
     
     def generators
-      @generators ||= @models.map { |m| "#{m}Generator" }
+      @model_names.map do |m| 
+        "#{m}Generator".constantize
+      end
+    end
+
+    def models
+      @model_names.map do |m|
+        m.constantize
+      end
     end
 
     private
@@ -40,12 +41,12 @@ module DBbench
     end
 
     def load_models(config_file)
-      @models = YAML.load(File.read(config_file))["models"].map(&:camelize)
-      @models.map(&:downcase).each { |f| require f }
+      @model_names = YAML.load(File.read(config_file))["models"].map(&:camelize)
+      @model_names.map(&:downcase).each { |f| require f }
     end
 
     def load_generators_and_routers
-      @models.map(&:downcase).each do |m| 
+      @model_names.map(&:downcase).each do |m| 
         require "#{m}_generator"
         require "#{m}_router"
       end

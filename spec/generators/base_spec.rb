@@ -10,7 +10,7 @@ describe DBbench::Generator::Base do
     KickGenerator.stub(:groins).and_return(:kick)
     KickGenerator.layout = { kickme: "groins" }
     KickGenerator.router = double("Router", :route => { function: :groins, arguments: "" })
-    KickGenerator.generate[:kickme].should == :kick
+    KickGenerator.generate(true)[:kickme].should == :kick
   end
 
   it "should raise UnkownGeneratorError if the generator function is not defined" do
@@ -35,14 +35,14 @@ describe DBbench::Generator::Base do
 
     it "should include the data from the enumerated properties" do
       KickGenerator.layout = { }
-      KickGenerator.generate[:id].should_not be_nil
+      KickGenerator.generate(true)[:id].should_not be_nil
     end
 
     it "should not overwrite the data from the enumerated properties" do
       KickGenerator.stub(:id).and_return(:thisshouldneverhappen)
       KickGenerator.layout = { id: "id" }
       KickGenerator.router = double("Router", :route => { function: :id, arguments: "" })
-      KickGenerator.generate[:id].should == "1"
+      KickGenerator.generate(true)[:id].should == "1"
     end
 
   end
@@ -53,7 +53,7 @@ describe DBbench::Generator::Base do
     end
 
     it "should get the layout from the infered AR conform model if not set" do
-      Kick.stub(:columns_hash).and_return({ foo: stub(:sql_value => "bar")})
+      Kick.stub(:columns_hash).and_return({ foo: stub(:sql_type=> "bar")})
       KickGenerator.layout.should == { foo: "bar" }
     end
 
@@ -69,7 +69,7 @@ describe DBbench::Generator::Base do
       KickRouter.stub(:new).and_return(router)
       KickGenerator.stub(:nothing).and_return(:great)
       KickGenerator.layout = { nothing: "nothing" }
-      KickGenerator.generate[:nothing].should == :great
+      KickGenerator.generate(true)[:nothing].should == :great
     end
 
   end
