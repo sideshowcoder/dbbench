@@ -16,7 +16,11 @@ When /^I replay a query$/ do
 end
 
 When /^I benchmark a query$/ do
-  @benchmark_result = DBbench.replay_benchmark
+  @benchmark_result = DBbench.run_replay_benchmark
+end
+
+When /^I benchmark the whole replay file$/ do
+  @benchmark_all = DBbench.replay_benchmark(:all)
 end
 
 Then /^A record should be added to the database$/ do
@@ -31,4 +35,6 @@ Then /^I should get the benchmark results$/ do
   @benchmark_result.should match /^\d+.\d+,( \d+.\d+,){2} \d+.\d+$/
 end
 
-
+Then /^I should get the benchmark results for the replay$/ do
+  @benchmark_all.first.should match /^\d+.\d+,( \d+.\d+,){2} \d+.\d+$/
+end
