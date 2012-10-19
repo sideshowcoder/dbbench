@@ -1,46 +1,46 @@
-# DbBench
+# DBbench
 
-Fill Database with random Data and run Prerecorded queries against it to optimize for speed.
+Provide a framework for DB benchmarking on an application layer. It mainly
+provides 2 functions:
+
+  * provide a way to generate data
+  * provide a way to replay predifined queries
+
+It works by extenting the basis via a config and a couple of short classes to
+iherit from the DBBench framework classes.
 
 ## Installation
 
-!!! IMPORTANT !!!
-Get the correct version of the geohash gem, which is 1.1.2. this version is currently not 
-available via rubygems but on github, so you need to install it first by downloading it from
-https://github.com/sideshowcoder/geohash and install via gem build and gem install
+Installation works as easy as clone build install:
 
-Checkout the code
-  
-  $ git clone https://github.com/sideshowcoder/dbbench.git
-
-Run rake to install 
-
-  $ rake build && rake install
+  $ git clone URL
+  $ rake build 
+  $ gem install pkg/db\_ench\*
 
 ## Usage
-    
-    
 
-### Generate Date
+For a basic usage checkout the spec/dummy example directory. Basically there
+need to be:
 
-  $ dbbench generate [DATABASECONFIG] [DATABASETYPE] [OPTIONAL NUMBEROFROWS]
+  * dbbench.yml: configuration for the benchmark itself
+  * database.yml: database configuration
+  * play class: class to configure the plays to use for requests to run against
+    the database
+  * model class: class to be used for the model, like an ActiveRecord model for
+    example
+  * generattor class: handle the datageneration, providing a lot of basics
+    already but needs to be extended for costum types for example.
+  * router class: route the mathing elements of the database layout to the
+    mathing generator functions
 
-1. Create a Database Config file for the DB so ActiveRecord can connect see database.yml in example
-2. Make sure the Database is setup correctly
-3. Run: $ dbbench generate database.yml mysql 100
-   This uses the database.yml file to connect, using the specified Adapter (mysql in this case) and create
-   100 records.
-  
-### Benchmark
+For more on datageneration check out the tests and especially the enumerated
+attributes to provide preprocessed data in an easy fashion.
 
-  $ dbbench benchmark [COMMANDFILE] [OUTPUTFILE] [DATABASECONFIG] [DATABASETYPE]
+## Benchmark
 
-1. Create a command file with predefinded queries
-2. Make sure the Database is setup correctly
-3. Run: $ dbbench benchmark commands.csv result.csv database.yml mysql
-   This with run the commands in commands.csv against the configured Database in this case MySQL and
-   record the result in result.csv
-  
-### Extend
+The benchmark provides the function to load a csv file with attributes and
+process them via the play class to run against the database and record the
+runtime. 
 
-To extend with new Databases and queries implement a adapter with and interface according to the mysql one
+
+
