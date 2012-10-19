@@ -10,12 +10,14 @@ describe "Configuration" do
     lambda { Something }.should_not raise_error
     lambda { SomethingGenerator }.should_not raise_error
     lambda { SomethingRouter }.should_not raise_error
+    lambda { MyPlay }.should_not raise_error
   end
 
   it "should define generators, routers and models" do
     DBbench.config.models.first.should == Something
     DBbench.config.routers.first.should == SomethingRouter
     DBbench.config.generators.first.should == SomethingGenerator
+    DBbench.config.play.should == MyPlay
   end
 
 end
