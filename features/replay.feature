@@ -9,5 +9,10 @@ Feature: replay
     When I replay a query
     Then I should see results
 
+  @wip
   Scenario: benchmark
+    Given DBbench is configured
+    And I provide a replay file to replay
+    When I benchmark a query
+    Then I should get the benchmark results
 

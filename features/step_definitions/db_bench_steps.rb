@@ -15,6 +15,10 @@ When /^I replay a query$/ do
   @play_result = DBbench.replay
 end
 
+When /^I benchmark a query$/ do
+  @benchmark_result = DBbench.replay_benchmark
+end
+
 Then /^A record should be added to the database$/ do
   Something.count.should == @number_of_records+1
 end
@@ -22,4 +26,9 @@ end
 Then /^I should see results$/ do
   @play_result.should_not be_nil
 end
+
+Then /^I should get the benchmark results$/ do
+  @benchmark_result.should match /^\d+.\d+,( \d+.\d+,){2} \d+.\d+$/
+end
+
 

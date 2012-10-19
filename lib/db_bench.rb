@@ -1,3 +1,4 @@
+require "benchmark"
 require "active_record"
 require "active_support/inflector"
 
@@ -23,11 +24,18 @@ module DBbench
   end
 
   def self.replay(&block)
-    @player.run(&block)
+    player.run(&block)
+  end
+
+  def self.replay_benchmark(&block)
+    result = Benchmark.measure do 
+      player.run(&block)
+    end
+    "#{result.utime}, #{result.stime}, #{result.total}, #{result.real}"
   end
 
   def self.generate(count)
-    @config.generators.each do |g| 
+    config.generators.each do |g| 
       count.times { g.generate }
     end
   end
