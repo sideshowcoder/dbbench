@@ -12,7 +12,8 @@ describe "Player" do
   end
 
   it "should run a play and return the result" do
-    Something.stub(:where).with("data=foo").and_return(true)
+    ar = double("ActiveRecordSomething", :count => true)
+    Something.stub(:where).with("data='foo'").and_return(ar)
     DBbench.player.run do
       |left| left.should == 0 
     end.should be_true
