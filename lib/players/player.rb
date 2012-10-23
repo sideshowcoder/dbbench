@@ -10,11 +10,5 @@ module DBbench
       end
     end
 
-    def run(&block)
-      current = plays.pop || return
-      yield plays.length if block_given?
-      current.execute
-    end
-
   end
 end

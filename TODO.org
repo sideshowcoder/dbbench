@@ -1,0 +1,22 @@
+* cassandre basic support
+  - connect to cassandra this is currently handled by ActiveRecord
+  this will be special for all supported databases
+* cassandra generators
+  - need to support create! method
+  - need to support passing all arguments as hash -> this should be the default anyway
+* cassandra replay
+  - need to support some kind of where
+  - rename sql_where to something more appropriate, maybe search string
+* more query output
+  ** describe query
+     - create a method to describe a query before it is run
+     - add description to run output
+* benchmark write
+  ** output
+     - configure output as csv
+     - write csv to file
+     - configure which elements to output
+
+* Backlog
+  - generate enumerated property incrementing first model get first entry in csv
+  - generate limit to some generator, generate 100 cities but 1000 lifts

@@ -10,11 +10,12 @@ require "players/play_base"
 
 module DBbench
   class << self
-    attr_reader :config, :player
+    attr_reader :config, :player, :generators
   end
 
   def self.load_configuration(config_path)
     @config = Configuration.new(config_path)
+    @generators = @config.generators
   end
 
   def self.load_replay_file(replay_file_path)
@@ -23,37 +24,17 @@ module DBbench
     @player = Player.new(replay_file_path, @config.play, @config.models.first)
   end
 
-  def self.replay(&block)
-    player.run(&block)
-  end
-
-  def self.replay_benchmark(count = 1, &block)
-    results = []
-    if count == :all
-      results << run_replay_benchmark do |left| 
-        if left < 0
-          return results     
-        else
-          yield left if block_given?
-        end
-      end
-    else
-      count.times do |n|
-        results << run_replay_benchmark
-        yield cound-n if block_given?
-      end
-    end
+  def self.replay
+    player.plays.each do |play|
+      m = Benchmark.measure { play.execute }
+      "#{m.utime}, #{m.stime}, #{m.total}, #{m.real}"
+    end      
   end
 
   def self.generate(count)
-    config.generators.each do |g| 
+    generators.each do |g| 
       count.times { g.generate }
     end
-  end
-
-  def self.run_replay_benchmark(&block)
-    result = Benchmark.measure { player.run(&block) }
-    "#{result.utime}, #{result.stime}, #{result.total}, #{result.real}"
   end
 
 end

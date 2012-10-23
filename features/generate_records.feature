@@ -7,5 +7,6 @@ Feature: generate records
     Given DBbench is configured
     When DBbech is called to generate a record
     Then A record should be added to the database
-    
+
+  
 
