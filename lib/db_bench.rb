@@ -24,10 +24,12 @@ module DBbench
     @player = Player.new(replay_file_path, @config.play, @config.models.first)
   end
 
-  def self.replay
+  def self.replay(&block)
     player.plays.each do |play|
       m = Benchmark.measure { play.execute }
-      "#{m.utime}, #{m.stime}, #{m.total}, #{m.real}"
+      am = "#{m.utime}, #{m.stime}, #{m.total}, #{m.real}"
+      yield am if block_given?
+      am
     end      
   end
 

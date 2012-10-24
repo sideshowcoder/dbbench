@@ -10,14 +10,16 @@ module DBbench
       end
 
       def sql_where
-        where_string = ""
+        query = []
         params.each do |key, value|
-          where_string << "#{key}='#{value}'"
+          query << "#{key}='#{value}'"
         end
-        where_string
+        query.join(" AND ")
       end
 
       def execute
+        # executing count so we can be sure the query is actually evaluated
+        # since queries are normally lazy
         model.where(sql_where).count
       end
 

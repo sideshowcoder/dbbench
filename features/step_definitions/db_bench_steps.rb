@@ -15,6 +15,11 @@ When /^I replay$/ do
   @result = DBbench.replay
 end
 
+When /^I replay given a block$/ do
+  @result = []
+  DBbench.replay { |r| @result << r }
+end
+
 Then /^A record should be added to the database$/ do
   Something.count.should == @number_of_records+1
 end
