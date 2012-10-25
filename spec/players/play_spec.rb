@@ -16,6 +16,7 @@ describe DBbench::Play::Base do
   it "should run against the model passed" do
     ar = double("ActiveRecordRelation", :count => 1)
     AModel.stub(:where).with("id='1'").and_return(ar)
+    play.dbtype = :ar
     play.execute.should == 1
   end
 
