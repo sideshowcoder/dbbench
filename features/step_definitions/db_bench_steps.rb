@@ -10,6 +10,10 @@ Given /^I provide a replay file$/ do
   DBbench.load_replay_file(File.expand_path("replay_one.csv", DUMMY_PATH))
 end
 
+Given /^I provide a replay file for cassandra$/ do
+  DBbench.load_replay_file(File.expand_path("replay_one_cassandra.csv", DUMMY_PATH))
+end
+
 When /^DBbench is called to generate a record$/ do
   @number_of_records = Something.count
   DBbench.generate(1)

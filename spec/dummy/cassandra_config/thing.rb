@@ -6,4 +6,5 @@ class Thing < ActiveColumn::Base
   def self.create!(*args)
     self.new(*args).save
   end
+
 end

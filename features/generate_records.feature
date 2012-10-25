@@ -8,7 +8,6 @@ Feature: generate records
     When DBbench is called to generate a record
     Then A record should be added to the database
 
-  @wip
   Scenario: generate a record in cassandra
     Given DBbench is configured for cassandra
     When DBbench is called to generate a record in cassandra

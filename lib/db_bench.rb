@@ -27,7 +27,7 @@ module DBbench
   end
 
   def self.replay(&block)
-    player.plays.each do |play|
+    player.plays.map do |play|
       m = Benchmark.measure { play.execute }
       am = "#{m.utime}, #{m.stime}, #{m.total}, #{m.real}"
       yield am if block_given?
