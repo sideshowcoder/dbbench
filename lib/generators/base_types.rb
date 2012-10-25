@@ -34,6 +34,10 @@ module DBbench
           end
         end
 
+        def uuid
+          SecureRandom.uuid
+        end
+
       end
     end
   end

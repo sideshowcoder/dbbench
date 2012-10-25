@@ -1,0 +1,6 @@
+models:
+  - thing
+
+play: my_play 
+
+database: cassandra/1.1

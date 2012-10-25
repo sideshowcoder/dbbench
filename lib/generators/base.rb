@@ -1,7 +1,6 @@
 require "generators/enumerated"
 require "generators/base_types"
 
-require "pry"
 module DBbench
   module Generator
     class UnkownGeneratorError < StandardError; end

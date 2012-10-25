@@ -20,6 +20,8 @@ Gem::Specification.new do |gem|
   # support for databases currently mysql and cassandra
   gem.add_dependency "mysql2"
   gem.add_dependency "cassandra"
+  # => loads an old version so it is loaded via the gemfile from github
+  # gem.add_dependency "active_column" 
   gem.add_dependency "activerecord"  
   gem.add_dependency "activesupport"  
 

@@ -1,5 +1,7 @@
 require "benchmark"
 require "active_record"
+require "cassandra/1.1"
+require "active_column"
 require "active_support/inflector"
 
 require "configuration/loader"
@@ -38,5 +40,6 @@ module DBbench
       count.times { g.generate }
     end
   end
+
 
 end

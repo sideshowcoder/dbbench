@@ -1,0 +1,6 @@
+servers: 127.0.0.1:9160
+keyspace: "demo"
+thrift: 
+  timeout: 3
+  retries: 2
+

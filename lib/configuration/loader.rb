@@ -8,7 +8,8 @@ module DBbench
       @config_root = config_path
       # add root to loadpath so we can require rb files from it
       $:.unshift(@config_root)
-      connect_to_database(config_file_path("database.yml"))
+      dbtype = YAML.load(File.read(config_file_path("dbbench.yml")))["database"] || :mysql
+      connect_to_database(config_file_path("database.yml"), dbtype)
       load_models(config_file_path("dbbench.yml"))
       load_play(config_file_path("dbbench.yml"))
       load_generators_and_routers
@@ -37,9 +38,14 @@ module DBbench
       File.expand_path(filename, config_root)
     end
 
-    def connect_to_database(config_file)
-      db = YAML.load(File.read(config_file))
-      ActiveRecord::Base.establish_connection(db)
+    def connect_to_database(config_file, dbtype = :mysql)
+      db = YAML.load_file(config_file)
+      if dbtype == :mysql 
+        ActiveRecord::Base.establish_connection(db)
+      elsif dbtype.start_with?("cassandra")
+        $cassandra = Cassandra.new(db["keyspace"], db["servers"])
+        ActiveColumn.connection = $cassandra
+      end
     end
 
     def load_models(config_file)

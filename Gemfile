@@ -4,4 +4,4 @@
 gemspec
 
 gem "pry"
-
+gem "active_column", path: "/Users/phil/Source/active_column"
