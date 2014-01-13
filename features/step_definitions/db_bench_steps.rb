@@ -30,7 +30,7 @@ end
 
 When /^DBbench is called to generate a record in cassandra$/ do
   # we generate with an id of "1234"
-  begin 
+  begin
     @number_of_records = Thing.find("1234").fetch("1234").length
   rescue KeyError
     @number_of_records = 0

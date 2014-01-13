@@ -32,11 +32,11 @@ module DBbench
       am = "#{m.utime}, #{m.stime}, #{m.total}, #{m.real}"
       yield am if block_given?
       am
-    end      
+    end
   end
 
   def self.generate(count)
-    generators.each do |g| 
+    generators.each do |g|
       count.times { g.generate }
     end
   end
