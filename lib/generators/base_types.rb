@@ -4,10 +4,10 @@ module DBbench
   module Generator
     module BaseTypesLib
       extend ActiveSupport::Concern
+      MAX_INT = 2147483647
 
       included do
         # define max constants according to db
-        MAX_INT = 2147483647
       end
 
       module ClassMethods
