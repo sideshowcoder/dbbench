@@ -5,7 +5,7 @@ require "db_bench/version"
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Philipp Fehre"]
-  gem.email         = ["phil@cospired.com"]
+  gem.email         = ["philipp.fehre@gmail.com"]
   gem.description   = %q{Database benchmark tools to create input data and rerun defined queries}
   gem.summary       = %q{Tools to benchmark a database}
   gem.homepage      = "https://github.com/sideshowcoder/dbbench"
@@ -16,14 +16,13 @@ Gem::Specification.new do |gem|
   gem.name          = "db_bench"
   gem.require_paths = ["lib"]
   gem.version       = DBbench::VERSION
-  
+
   # support for databases currently mysql and cassandra
   gem.add_dependency "mysql2"
   gem.add_dependency "cassandra"
-  # => loads an old version so it is loaded via the gemfile from github
-  # gem.add_dependency "active_column" 
-  gem.add_dependency "activerecord"  
-  gem.add_dependency "activesupport"  
+  gem.add_dependency "active_column"
+  gem.add_dependency "activerecord"
+  gem.add_dependency "activesupport"
 
   # testing and development
   gem.add_development_dependency "rspec"

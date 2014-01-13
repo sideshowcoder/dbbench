@@ -1,11 +1,11 @@
 require "spec_helper"
-  
+
 class KickGenerator < DBbench::Generator::Base; end
 class KickRouter < DBbench::Router::Base; end
 class Kick; end
 
 describe DBbench::Generator::Base do
-  
+
   it "should should generate a hash with the given layout filled with data" do
     KickGenerator.stub(:groins).and_return(:kick)
     KickGenerator.layout = { kickme: "groins" }

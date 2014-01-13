@@ -9,13 +9,13 @@ describe DBbench::Generator::BaseTypesLib do
   subject do
     BaseTypesTest
   end
-  
+
   describe "int generator" do
     it "should create signed integers" do
       subject.int(2).should be_between(-99, 99)
     end
 
-    it "should create usigned integers" do 
+    it "should create usigned integers" do
       subject.int(2, true).should be_between(0, 99)
     end
 

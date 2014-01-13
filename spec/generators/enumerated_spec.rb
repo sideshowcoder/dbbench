@@ -7,10 +7,10 @@ describe DBbench::Generator::Enumerated do
 
   it "should throw an error if the data file is not present" do
     lambda do
-      DBbench::Generator::Enumerated.new(:nothere) 
-    end.should raise_error(DBbench::Generator::MissingDataFile) 
+      DBbench::Generator::Enumerated.new(:nothere)
+    end.should raise_error(DBbench::Generator::MissingDataFile)
   end
- 
+
   it "should read a csv" do
     subject.items[0].should include_hash(id: "1", name: "pants", price: "1.99")
   end

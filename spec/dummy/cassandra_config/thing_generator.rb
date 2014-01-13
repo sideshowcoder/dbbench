@@ -12,5 +12,4 @@ class ThingGenerator < DBbench::Generator::Base
     "1234"
   end
 
-  
 end
