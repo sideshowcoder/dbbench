@@ -18,19 +18,19 @@ and now it is open source, enjoy it and hack it!
 
 Installation works as easy as clone build install:
 
-  $ git clone URL
-  $ rake build
-  $ gem install pkg/db\_ench\*
+    $ git clone URL
+    $ rake build
+    $ gem install pkg/db\_ench\*
 
 ## Testing
 You need to setup at least MySQL first, for the needed tables see
 
-  $ rake setup:mysql
+    $ rake setup:mysql
 
 Cassandra is very version dependent so it is excluded for now
 
-  $ rake spec
-  $ rake features
+    $ rake spec
+    $ rake features
 
 Will run all the tests against MySQL
 
